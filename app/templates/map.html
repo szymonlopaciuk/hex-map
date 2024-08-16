@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hex Map</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        #map {
+            width: 100%;
+            height: 100%;
+        }
+        .hexagon {
+            stroke: #000;
+            stroke-width: 1px;
+        }
+    </style>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://d3js.org/d3-hexbin.v0.2.min.js"></script>
+</head>
+<body>
+    <div id="map"></div>
+
+    <script>
+        const width = window.innerWidth;
+        const height = window.innerHeight;
+        const hexRadius = 30;
+
+        const zoom = d3.zoom().on("zoom", (event) => {
+            g.attr("transform", event.transform);
+        })
+
+        // Create an SVG element that takes the entire screen
+        const svg = d3.select("#map")
+            .append("svg")
+            .attr("width", width)
+            .attr("height", height)
+            .call(zoom);
+
+        // Append a group to hold the hexagons and center it
+        const g = svg.append("g");
+
+        const initialTransform = d3.zoomIdentity.translate(width / 2, height / 2);
+        svg.call(zoom.transform, initialTransform);
+
+        const hexbin = d3.hexbin()
+            .radius(hexRadius)
+            .extent([[0, 0], [width, height]]);
+
+        d3.json("/api/tiles").then(data => {
+            const hexes = data.map(d => [d.q * Math.sqrt(3) * hexRadius, d.r * 1.5 * hexRadius]);
+
+            g.selectAll(".hexagon")
+                .data(hexbin(hexes))
+                .enter().append("path")
+                .attr("class", "hexagon")
+                .attr("d", hexbin.hexagon())
+                .attr("transform", d => `translate(${d.x},${d.y})`)
+                .style("fill", (d, i) => data[i].type);
+        });
+    </script>
+</body>
+</html>
