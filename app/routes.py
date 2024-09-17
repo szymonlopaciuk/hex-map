@@ -11,9 +11,9 @@ def map_view():
 def get_tiles():
     tiles = HexTile.query.all()
     return jsonify([{
-        'q': tile.q,
-        'r': tile.r,
+        'p': tile.q,
+        'q': tile.r,
         'elevation': tile.elevation,
         'type': tile.type,
-        'notes': tile.notes
+        'notes': tile.notes,
     } for tile in tiles])
