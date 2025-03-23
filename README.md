@@ -14,6 +14,8 @@ Use the `docker-compose.yaml` file instead to run the "production" version.
 
 The project is compatible with Podman, so `podman compose` can be used too.
 
+One the containers are built and the project is up, navigate to `http://127.0.0.1:8080/` open the app.
+
 ## Database migrations
 
 On first run it will be necessary to set up the database and apply migrations:
